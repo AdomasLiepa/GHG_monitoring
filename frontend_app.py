@@ -14,6 +14,7 @@ from sklearn.neighbors import BallTree
 import pycountry
 import os
 import glob
+from google.cloud import storage
 
 # Helper: ISO3 to country name
 
@@ -22,6 +23,35 @@ def get_country_name(iso3):
         return pycountry.countries.get(alpha_3=iso3).name
     except Exception:
         return iso3
+
+def download_from_gcs_private(bucket_name, gcs_path, local_path):
+    if os.path.exists(local_path):
+        print(f"{local_path} already exists, skipping download.")
+        return
+    print(f"Downloading gs://{bucket_name}/{gcs_path} to {local_path}...")
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+    try:
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(gcs_path)
+        blob.download_to_filename(local_path)
+        print("Download complete.")
+    except Exception as e:
+        print(f"Failed to download {gcs_path}: {e}")
+
+# List all required files and their paths in the bucket
+required_files = [
+    ("data/emission/emit_clean.csv", "data/emission/emit_clean.csv"),
+    ("data/emission/cams_clean.csv", "data/emission/cams_clean.csv"),
+    # Add more as needed, e.g.:
+    # ("data/GIS/Crude_oil_refinaries.csv", "data/GIS/Crude_oil_refinaries.csv"),
+    # ("data/GIS/Gathering_and_Processing.csv", "data/GIS/Gathering_and_Processing.csv"),
+]
+
+bucket_name = "ghg_monitoring_data"
+
+for gcs_path, local_path in required_files:
+    download_from_gcs_private(bucket_name, gcs_path, local_path)
 
 # --- Load GIS datasets into gis_df ---
 gis_files = [
