@@ -5,3 +5,4 @@ requests
 streamlit-folium 
 geopandas
 shapely 
+google-cloud-storage
