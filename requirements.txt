@@ -1,9 +1,11 @@
 streamlit
+requests
 pandas
 pydeck
-requests 
-streamlit-folium 
+altair
 geopandas
-shapely 
-google-cloud-storage
+numpy
 geopy
+scikit-learn
+pycountry
+google-cloud-storage
