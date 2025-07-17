@@ -1,0 +1,2 @@
+# Ignore all data files and subdirectories in GHG_monitoring/data
+/data/ 
